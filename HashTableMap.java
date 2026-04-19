@@ -25,6 +25,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
 
         // Cast the array to hold LinkedList<Pair> ojects since it can't be declared to do so directly.
         table = (LinkedList<Pair>[]) new LinkedList[capacity];
+        // Initialize each element of the array to hold an empty LinkedList
         for (int i = 0; i < capacity; i++) {
             table[i] = new LinkedList<>();
         }
@@ -37,6 +38,9 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         this(8);
     }
 
+    /**
+     * Inner class to store key-value pair for our hashmap. Each element of the array will be a LinkedList of Pair objects
+     */
     protected class Pair {
         public KeyType key;
         public ValueType value;
@@ -50,21 +54,34 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     /**
      * This helper method calculates what array index each key should be stored at by taking the absolute value of the key's hashCode and doing the modulus
      * operator with the capacity of the array.
+     * No need to check for nullity. The method which call this helper already ensure the key is not null
+     * @return the index of the array which the key should be stored at
+     * @param key is the key we're hashing.
      */
     private int hash(KeyType key) {
         int hc = key.hashCode();
         return (Math.abs(hc) % table.length);
     }
 
+    /**
+     * This method insets a key-value Pair into the array
+     * @param key is the key
+     * @param value is its corresponding value. These two valuew will be used to create a Pair object
+     * @throws NullPointerException if the key parameter is null
+     * @throws IllegalArgumentException if the key is already contained in the hash table map
+     */
     @Override
     public void put(KeyType key, ValueType value) throws IllegalArgumentException {
+        // Check exception conditions
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
         if (containsKey(key)) {
             throw new IllegalArgumentException("Key is already stored");
         }
+        // Create Pair object
         Pair tuple = new Pair(key, value);
+        // Find correct index and insert Pair to the LinkedList at that array index
         int i = hash(key);
         LinkedList<Pair> target = table[i];
         target.add(tuple);
@@ -73,28 +90,47 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         if (lf >= THRESHOLD) {
             resize();
         }
-    }
+  }
 
+    /**
+     * This method checks if a key is currently stored in the hash table map
+     * @param key is the key we're looking for
+     * @returns true if the key found, false if not
+     * @throws NullPointerException if the key parameter is null
+     */
     @Override
     public boolean containsKey(KeyType key) {
+        // Null check
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+        // Find what index key should be at. This way, we don't have to search every LinkedList
         int i = hash(key);
         LinkedList<Pair> target = table[i];
+        // Search the LinkedList at that element for a Pair object with that key
         for(Pair p : target) {
             if (p.key.equals(key)) {
                 return true;
             }
         }
+        // If we get through the entire LinkedList, the key is not in the array and return false
         return false;
     }
 
+    /**
+     * This method returns the value associated with a certain key
+     * @param key is the key we're looking for
+     * @returns the value corresponding to that key
+     * @throws NullPointerException if the key parameter is null
+     * @throws NoSuchElementException if the key cannot be found in the array
+     */
     @Override
     public ValueType get(KeyType key) throws NoSuchElementException {
+        // Null check
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+        // Perform our own lookup instead of using the containsKey() method. This way, we only have to traverse the LinkedList once
         int i = hash(key);
         LinkedList<Pair> target = table[i];
         for(Pair p : target) {
@@ -102,26 +138,42 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
                 return p.value;
             }
         }
+        // If the key is not in this LinkedList, it doesn't exist in the hash table map.
         throw new NoSuchElementException("Key not found in the HashTableMap");
     }
 
+    /**
+     * This method removes the key-value pair associated with a certain key
+     * @param key is the key we're looking for
+     * @returns the value corresponding to that key
+     * @throws NullPointerException if the key parameter is null
+     * @throws NoSuchElementException if the key cannot be found in the array
+     */
     @Override
     public ValueType remove(KeyType key) throws NoSuchElementException {
+        // Null check
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
+        // Perform our own lookup instead of using the containsKey() method. This way, we only have to traverse the LinkedList once
         int i = hash(key);
         LinkedList<Pair> target = table[i];
         for(Pair p : target) {
             if (p.key.equals(key)) {
                 target.remove(p);
+                // Update the load factor after removing the element
                 updateLF();
                 return p.value;
             }
         }
+        // If the key is not in this LinkedList, it doesn't exist in the hash table map.
         throw new NoSuchElementException("Key not found in the HashTableMap");
     } 
 
+    /**
+     * This method removes all key-value pairs from the array
+     * I do this by instantiating a new array of the same size and pointing table to that array
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void clear() {
@@ -136,6 +188,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     /**
      * For each LinkedList in table, add the length of it to a cumulative total. After iterating through all of the array, return the total. This will
      * be the number of keys in the entire collection.
+     * @return the total number of keys in the array
      */
     @Override
     public int getSize() {
@@ -148,6 +201,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
 
     /**
      * This method returns the size of the array holding the collection, since that is the capacity.
+     * @return the capacity of the hash table map
      */
     @Override
     public int getCapacity() {
@@ -163,14 +217,20 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
 
     /**
      * Getter method for the load factor field.
+     * @return the load factor field
      */
     private double getLF() {
         return lf;
     }
 
+    /**
+     * This method returns a list of every key stored in the hash table map
+     * @return a LinkedList of keys
+     */
     @Override
     public LinkedList<KeyType> getKeys() {
         LinkedList<KeyType> allKeys = new LinkedList<>();
+        // Iterate through the array. For the LinkedList at each element, add every key stored there
         for(LinkedList<Pair> l : table) {
             for(Pair p : l) {
                 allKeys.add(p.key);
@@ -184,15 +244,19 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
      */
     @SuppressWarnings("unchecked")
     private void resize() {
+        // store original capacity and all the Pairs
         int origCapacity = getCapacity();
         LinkedList<Pair> allPairs = new LinkedList<>();
         for(LinkedList<Pair> l : table) {
             allPairs.addAll(l);
         }
+        // Set table equal to a new array twice the size, instantiated with empty LinkedLists
         table = (LinkedList<Pair>[]) new LinkedList[origCapacity * 2];
         for (int i = 0; i < origCapacity * 2; i++) {
             table[i] = new LinkedList<>();
         }
+        // For every Pair previously, re-insert it into the new array
+        // Since this uses the put() method, the index for each key is re-calculated.
         for (Pair p : allPairs) {
             put(p.key, p.value);
         }
