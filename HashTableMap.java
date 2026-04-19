@@ -220,4 +220,76 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.getSize(), 5);
         assertEquals(map.getCapacity(), 12);
     }
+
+    @Test
+    public void testContainsGetAndRemove() {
+        HashTableMap<Integer, String> map = new HashTableMap<>();
+        map.put(15,"Odunze");
+        map.put(10, "Burden III");
+        map.put(18, "Williams");
+        map.put(84, "Loveland");
+        map.put(85, "Kmet");
+        map.put(4, "Swift");
+        map.put(25, "Monongai");
+        assertTrue(map.containsKey(15));
+        assertTrue(map.containsKey(18));
+        assertTrue(map.containsKey(85));
+        assertTrue(!map.containsKey(9));
+        assertTrue(!map.containsKey(17));
+        assertTrue(!map.containsKey(58));
+        assertEquals(map.get(10), "Burden III");
+        assertEquals(map.get(85), "Kmet");
+        assertEquals(map.getSize(), 7);
+        assertEquals(map.remove(4), "Swift");
+        assertEquals(map.remove(25), "Monongai");
+        assertEquals(map.getSize(), 5);
+        try {
+            map.get(70);
+            System.out.println("70TNE");
+            assertTrue(false);
+        } catch (NoSuchElementException e) {
+
+        } catch (Exception e) {
+            System.out.println("70TWE");
+            assertTrue(false);
+        }
+        try {
+            map.remove(62);
+            System.out.println("62TNE");
+            assertTrue(false);
+        } catch (NoSuchElementException e) {
+
+        } catch (Exception e) {
+            System.out.println("62TWE");
+            assertTrue(false);
+        }
+    }
+
+    public static void main(String args[]) {
+        HashTableMap<Integer, String> map = new HashTableMap<>();
+        map.put(15,"Odunze");
+        map.put(10, "Burden III");
+        map.put(18, "Williams");
+        map.put(84, "Loveland");
+        map.put(85, "Kmet");
+        map.put(4, "Swift");
+        map.put(25, "Monongai");
+        try {
+            map.get(70);
+            System.out.println("70TNE");
+        } catch (NoSuchElementException e) {
+
+        } catch (Exception e) {
+            System.out.println("70TWE");
+        }
+        try {
+            map.remove(62);
+            System.out.println("62TNE");
+            assertTrue(false);
+        } catch (NoSuchElementException e) {
+
+        } catch (Exception e) {
+            System.out.println("62TWE");
+        }
+    }
 }
