@@ -1,5 +1,7 @@
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueType> {
     
@@ -196,10 +198,26 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         }
     }
 
-    public static void main(String[] args) {
-        String myStr = "Hello";
-        System.out.println(myStr.hashCode());
-        Integer myInt = new Integer(97);
-        System.out.println(myInt.hashCode());
+    ////////////////////////////////////////////////////////// TESTER METHODS //////////////////////////////////////////////////////////
+     
+    @Test
+    public void testPutAndResize() {
+        HashTableMap<Integer, String> map = new HashTableMap<>(3);
+        assertEquals(map.getCapacity(), 3);
+        map.put(4, "Crow-Armstrong");
+        assertEquals(map.getSize(), 1);
+        assertEquals(map.getCapacity(), 3);
+        map.put(27, "Suzuki");
+        assertEquals(map.getSize(), 2);
+        assertEquals(map.getCapacity(), 3);
+        map.put(2, "Hoerner");
+        assertEquals(map.getSize(), 3);
+        assertEquals(map.getCapacity(), 6);
+        map.put(29, "Busch");
+        assertEquals(map.getSize(), 4);
+        assertEquals(map.getCapacity(), 6);
+        map.put(7, "Swanson");
+        assertEquals(map.getSize(), 5);
+        assertEquals(map.getCapacity(), 12);
     }
 }
