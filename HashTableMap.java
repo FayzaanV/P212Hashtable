@@ -4,11 +4,11 @@ import java.util.NoSuchElementException;
 public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueType> {
     
     // Array to store the table. Linked Lists of Pair objects used to handle collisions
-    LinkedList<Pair>[] table = null;
+    protected LinkedList<Pair>[] table = null;
     // Private helper field to store the load factor. Update it after every insertion and removal
-    double lf = 0;
+    private double lf = 0;
     // Private field to store the threshhold for resizing
-    private double THRESHOLD = 0.75;
+    private final double THRESHOLD = 0.75;
 
     /**
      * This constructor takes one parameter and sets the initial size of the HashTable to that
@@ -23,15 +23,16 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
 
         // Cast the array to hold LinkedList<Pair> ojects since it can't be declared to do so directly.
         table = (LinkedList<Pair>[]) new LinkedList[capacity];
+        for (int i = 0; i < capacity; i++) {
+            table[i] = new LinkedList<>();
+        }
     }
 
     /**
      * This constructor takes no parameters and set the HashTable to an initial size of 8
      */
-    @SuppressWarnings("unchecked")
     public HashTableMap() {
-        // Cast the array to hold LinkedList<Pair> ojects since it can't be declared to do so directly.
-        table = (LinkedList<Pair>[]) new LinkedList[8];
+        this(8);
     }
 
     protected class Pair {
@@ -50,7 +51,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
      */
     private int hash(KeyType key) {
         int hc = key.hashCode();
-        return (hc % table.length);
+        return (Math.abs(hc) % table.length);
     }
 
     @Override
@@ -58,7 +59,9 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
-        // Check for other exception here
+        if (containsKey(key)) {
+            throw new IllegalArgumentException("Key is already stored");
+        }
         Pair tuple = new Pair(key, value);
         int i = hash(key);
         LinkedList<Pair> target = table[i];
@@ -90,9 +93,6 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
         }
-        if (!containsKey(key)) {
-            throw new NoSuchElementException("Key not found in the HashTableMap");
-        }
         int i = hash(key);
         LinkedList<Pair> target = table[i];
         for(Pair p : target) {
@@ -100,16 +100,13 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
                 return p.value;
             }
         }
-        return null;
+        throw new NoSuchElementException("Key not found in the HashTableMap");
     }
 
     @Override
     public ValueType remove(KeyType key) throws NoSuchElementException {
         if (key == null) {
             throw new NullPointerException("Key cannot be null");
-        }
-        if (!containsKey(key)) {
-            throw new NoSuchElementException("Key not found in the HashTableMap");
         }
         int i = hash(key);
         LinkedList<Pair> target = table[i];
@@ -120,7 +117,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
                 return p.value;
             }
         }
-        return null;
+        throw new NoSuchElementException("Key not found in the HashTableMap");
     } 
 
     @Override
@@ -129,6 +126,9 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         int capacity = getCapacity();
         // By creating a new list, we erase all reference to the old list and every pair it stored. They will be picked up by the garbage collector.
         table = (LinkedList<Pair>[]) new LinkedList[capacity];
+        for (int i = 0; i < capacity; i++) {
+            table[i] = new LinkedList<>();
+        }
     }
 
     /**
@@ -153,19 +153,10 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     }
 
     /**
-     * This helper method updates the load factor field by counting how many indices are in use and then dividing it by the capacity.
-     * The load factor is updated every time a key-value pair is added or removed.
+     * This helper method updates the load factor field by dividing the keys in the collection by how many keys it can store.
      */
     private void updateLF() {
-        int inUse = 0;
-        // For every LinkedList that is not empty, that index will be in use and we increment the counter.
-        for (LinkedList<Pair> l : table) {
-            if (!(l.isEmpty())) {
-                inUse++;
-            }
-        }
-        // Don't have to worry about a divide by zero error since capacity will always be at least one.
-        lf = inUse/getCapacity();
+        lf = (double)getSize()/getCapacity();
     }
 
     /**
@@ -190,12 +181,16 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
      * Helper method to resize the array if the load factor gets too high
      */
     @SuppressWarnings("unchecked")
-    public void resize() {
+    private void resize() {
+        int origCapacity = getCapacity();
         LinkedList<Pair> allPairs = new LinkedList<>();
         for(LinkedList<Pair> l : table) {
             allPairs.addAll(l);
         }
-        table = (LinkedList<Pair>[]) new LinkedList[getCapacity() * 2];
+        table = (LinkedList<Pair>[]) new LinkedList[origCapacity * 2];
+        for (int i = 0; i < origCapacity * 2; i++) {
+            table[i] = new LinkedList<>();
+        }
         for (Pair p : allPairs) {
             put(p.key, p.value);
         }
