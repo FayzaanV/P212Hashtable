@@ -264,6 +264,10 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
 
     ////////////////////////////////////////////////////////// TESTER METHODS //////////////////////////////////////////////////////////
      
+    /**
+     * This tester method tests the put() method, and that the resize operation is performed at the correct load factors
+     * This is done by inserting values and checking the number of keys and the capacity of the hash table map
+     */
     @Test
     public void testPutAndResize() {
         HashTableMap<Integer, String> map = new HashTableMap<>(3);
@@ -274,17 +278,24 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         map.put(27, "Suzuki");
         assertEquals(map.getSize(), 2);
         assertEquals(map.getCapacity(), 3);
+        // Inserting Hoerner should create a lf of 1 and lead to the capacity being doubled
         map.put(2, "Hoerner");
         assertEquals(map.getSize(), 3);
         assertEquals(map.getCapacity(), 6);
         map.put(29, "Busch");
         assertEquals(map.getSize(), 4);
         assertEquals(map.getCapacity(), 6);
+        // Adding Swanson should lead to a lf of 0.83 and cause the capacity to be doubled again
         map.put(7, "Swanson");
         assertEquals(map.getSize(), 5);
         assertEquals(map.getCapacity(), 12);
     }
 
+    /**
+     * This tester method tests the containsKey(), get(), and remove() methods. It does so by inserting many key-value pairs,
+     * then checking that containsKey() and get() return the correct values, and that return() also returns the correct values and that 
+     * it correctly updates the number of keys.
+     */
     @Test
     public void testContainsGetAndRemove() {
         HashTableMap<Integer, String> map = new HashTableMap<>();
@@ -309,8 +320,14 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.getSize(), 5);
     }
 
+    /**
+     * This tester method tests every case in which an Exception should be thrown. It does this by calling methods with incorrect parameters, and
+     * then using try catch blocks it ensures the test fails if no error or the wrong error is thrown.
+     */
+    @SuppressWarnings("unused")
     @Test
     public void testErrorHandling() {
+        // The constructor ensures the original capacity is always at least one. This should throw an IllegalArgumentException
         try {
             HashTableMap<Integer, String> wrongMap = new HashTableMap<>(-17);
             assertTrue(false);
@@ -320,6 +337,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
             assertTrue(false);
         }
 
+        // The put() shouldn't allow duplicate keys to be inserted into the map
         HashTableMap<Integer, String> map = new HashTableMap<>();
         map.put(4, "Swift");
         try {
@@ -331,6 +349,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
             assertTrue(false);
         }
 
+        // get() and remove() both throw NoSuchElementExceptions when the key does not exist in the map
         try {
             map.get(70);
             assertTrue(false);
@@ -348,6 +367,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
             assertTrue(false);
         }
 
+        // put(), containsKey(), return(), and get() should all throw NullPointerExceptions with null inputs.
         try {
             map.put(null, "Zero");
             assertTrue(false);
@@ -382,6 +402,11 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         }
     }
 
+    /**
+     * This test tests the rehashing done by the resize method. It does this using the order of the getKeys() method. The way I've
+     * written the getKeys() method, it should return keys in the order of the LinkedList they are in, in the order of the array indices
+     * from 0 ascending.
+     */
     @Test
     public void testRehashing() {
         HashTableMap<Integer, String> map = new HashTableMap<>(3);
@@ -409,6 +434,9 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.getKeys().get(5), 6);
     }
 
+    /**
+     * This test tests that the getSize() and getCapacity() methods work properly under insertions, resizing, and when the clear() method is called.
+     */
     @Test
     public void testClearAndGetters() {
         HashTableMap<Integer, String> map = new HashTableMap<>();
