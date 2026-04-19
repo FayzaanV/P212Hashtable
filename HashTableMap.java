@@ -243,24 +243,77 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.remove(4), "Swift");
         assertEquals(map.remove(25), "Monongai");
         assertEquals(map.getSize(), 5);
+    }
+
+    @Test
+    public void testErrorHandling() {
+        try {
+            HashTableMap<Integer, String> wrongMap = new HashTableMap<>(-17);
+            assertTrue(false);
+        } catch (IllegalArgumentException e) {
+
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+
+        HashTableMap<Integer, String> map = new HashTableMap<>();
+        map.put(4, "Swift");
+        try {
+            map.put(4, "Crow-Armstrong");
+            assertTrue(false);
+        } catch (IllegalArgumentException e) {
+
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+
         try {
             map.get(70);
-            System.out.println("70TNE");
             assertTrue(false);
         } catch (NoSuchElementException e) {
 
         } catch (Exception e) {
-            System.out.println("70TWE");
             assertTrue(false);
         }
         try {
             map.remove(62);
-            System.out.println("62TNE");
             assertTrue(false);
         } catch (NoSuchElementException e) {
 
         } catch (Exception e) {
-            System.out.println("62TWE");
+            assertTrue(false);
+        }
+
+        try {
+            map.put(null, "Zero");
+            assertTrue(false);
+        } catch (NullPointerException e) {
+
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        try {
+            map.containsKey(null);
+            assertTrue(false);
+        } catch (NullPointerException e) {
+
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        try {
+            map.get(null);
+            assertTrue(false);
+        } catch (NullPointerException e) {
+
+        } catch (Exception e) {
+            assertTrue(false);
+        }
+        try {
+            map.remove(null);
+            assertTrue(false);
+        } catch (NullPointerException e) {
+
+        } catch (Exception e) {
             assertTrue(false);
         }
     }
