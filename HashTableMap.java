@@ -5,6 +5,8 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     
     // Array to store the table. Linked Lists of Pair objects used to handle collisions
     LinkedList<Pair>[] table = null;
+    // Private helper field to store the load factor. Update it after every insertion and removal
+    double lf = 0;
 
     /**
      * This constructor takes one parameter and sets the initial size of the HashTable to that
@@ -41,7 +43,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     }
 
     @Override
-    public void put(KeyType key, ValueType value) throws IllegalArgumentException {}
+    public void put(KeyType key, ValueType value) throws IllegalArgumentException {} //Update lf here
 
     @Override
     public boolean containsKey(KeyType key) {
@@ -53,26 +55,77 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         return null;
     }
 
+    /**
+     * This helper method calculates what array index each key should be stored at by taking the absolute value of the key's hashCode and doing the modulus
+     * operator with the capacity of the array.
+     */
+    private int hash(KeyType key) {
+        int hc = key.hashCode();
+        return (hc % table.length);
+    }
+
     @Override
     public ValueType remove(KeyType key) throws NoSuchElementException {
+        // Update lf here
         return null;
-    }
+    } 
 
     @Override
     public void clear() {}
 
+    /**
+     * For each LinkedList in table, add the length of it to a cumulative total. After iterating through all of the array, return the total. This will
+     * be the number of keys in the entire collection.
+     */
     @Override
     public int getSize() {
-        return 0;
+        int size = 0;
+        for (LinkedList<Pair> l : table) {
+            size += l.size();
+        }
+        return size;
     }
 
+    /**
+     * This method returns the size of the array holding the collection, since that is the capacity.
+     */
     @Override
     public int getCapacity() {
-        return 0;
+        return table.length;
+    }
+
+    /**
+     * This helper method updates the load factor field by counting how many indices are in use and then dividing it by the capacity.
+     * The load factor is updated every time a key-value pair is added or removed.
+     */
+    private void updateLF() {
+        int inUse = 0;
+        // For every LinkedList that is not empty, that index will be in use and we increment the counter.
+        for (LinkedList<Pair> l : table) {
+            if (!(l.isEmpty())) {
+                inUse++;
+            }
+        }
+        // Don't have to worry about a divide by zero error since capacity will always be at least one.
+        lf = inUse/getCapacity();
+    }
+
+    /**
+     * Getter method for the load factor field.
+     */
+    private double getLF() {
+        return lf;
     }
 
     @Override
     public LinkedList<KeyType> getKeys() {
         return null;
+    }
+
+    public static void main(String[] args) {
+        String myStr = "Hello";
+        System.out.println(myStr.hashCode());
+        Integer myInt = new Integer(97);
+        System.out.println(myInt.hashCode());
     }
 }
