@@ -345,15 +345,25 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.getKeys().get(5), 6);
     }
 
-    public static void main(String args[]) {
-        HashTableMap<Integer, String> map = new HashTableMap<>(3);
-        map.put(12, "Bush"); //should be at index 0
-        map.put(2, "Bryant"); //should be at index 2
-        map.put(1, "Johnson"); //This should trigger a resize operation
-        map.put(6, "Gordon");
-        System.out.println(map.getKeys());
-        map.put(98, "Sweat");
-        map.put(53, "Edwards");
-        System.out.println(map.getKeys());
+    @Test
+    public void testClearAndGetters() {
+        HashTableMap<Integer, String> map = new HashTableMap<>();
+        assertEquals(map.getSize(), 0);
+        assertEquals(map.getCapacity(), 8);
+        map.put(49, "Arrieta");
+        map.put(9, "Baez");
+        map.put(17, "Bryant");
+        map.put(44, "Rizzo");
+        map.put(12, "Schwarber");
+        assertEquals(map.getSize(), 5);
+        assertEquals(map.getCapacity(), 8);
+        map.put(18, "Zobrist");
+        map.put(24, "Fowler");
+        assertEquals(map.getSize(), 7);
+        assertEquals(map.getCapacity(), 16);
+        map.clear();
+        assertEquals(map.getSize(), 0);
+        assertEquals(map.getCapacity(), 16);
+        assertTrue(map.getKeys().isEmpty());
     }
 }
