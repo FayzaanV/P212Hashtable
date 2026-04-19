@@ -7,6 +7,8 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     LinkedList<Pair>[] table = null;
     // Private helper field to store the load factor. Update it after every insertion and removal
     double lf = 0;
+    // Private field to store the threshhold for resizing
+    private double THRESHOLD = 0.75;
 
     /**
      * This constructor takes one parameter and sets the initial size of the HashTable to that
@@ -43,10 +45,30 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     }
 
     @Override
-    public void put(KeyType key, ValueType value) throws IllegalArgumentException {} //Update lf here
+    public void put(KeyType key, ValueType value) throws IllegalArgumentException {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        // Check for other exception here
+        Pair tuple = new Pair(key, value);
+        int i = hash(key);
+        LinkedList<Pair> target = table[i];
+        target.add(tuple);
+        //Update lf here
+        updateLF();
+        // resize
+    }
 
     @Override
     public boolean containsKey(KeyType key) {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        int i = hash(key);
+        LinkedList<Pair> target = table[i];
+        if (target.contains(key)) {
+            return true;
+        }
         return false;
     }
 
@@ -115,6 +137,13 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
      */
     private double getLF() {
         return lf;
+    }
+
+    /**
+     * Helper method to resize the array if the load factor gets too high
+     */
+    public void resize() {
+
     }
 
     @Override
