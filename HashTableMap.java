@@ -219,7 +219,7 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
      * Getter method for the load factor field.
      * @return the load factor field
      */
-    private double getLF() {
+    public double getLF() {
         return lf;
     }
 
@@ -309,9 +309,9 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertTrue(map.containsKey(15));
         assertTrue(map.containsKey(18));
         assertTrue(map.containsKey(85));
-        assertTrue(!map.containsKey(9));
-        assertTrue(!map.containsKey(17));
-        assertTrue(!map.containsKey(58));
+        assertFalse(map.containsKey(9));
+        assertFalse(map.containsKey(17));
+        assertFalse(map.containsKey(58));
         assertEquals(map.get(10), "Burden III");
         assertEquals(map.get(85), "Kmet");
         assertEquals(map.getSize(), 7);
@@ -330,11 +330,11 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         // The constructor ensures the original capacity is always at least one. This should throw an IllegalArgumentException
         try {
             HashTableMap<Integer, String> wrongMap = new HashTableMap<>(-17);
-            assertTrue(false);
+            fail("Constructor threw no exception for a negative input");
         } catch (IllegalArgumentException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("Constructor threw wrong exception for a negative input");
         }
 
         // The put() shouldn't allow duplicate keys to be inserted into the map
@@ -342,63 +342,63 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         map.put(4, "Swift");
         try {
             map.put(4, "Crow-Armstrong");
-            assertTrue(false);
+            fail("put() threw no exception for a duplicate input");
         } catch (IllegalArgumentException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("put() threw wrong exception for a duplicate input");
         }
 
         // get() and remove() both throw NoSuchElementExceptions when the key does not exist in the map
         try {
             map.get(70);
-            assertTrue(false);
+            fail("get() threw no exception for a non-existing input");
         } catch (NoSuchElementException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("get() threw wrong exception for a non-existing input");
         }
         try {
             map.remove(62);
-            assertTrue(false);
+            fail("remove() threw no exception for a non-existing input");
         } catch (NoSuchElementException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("remove() threw no exception for a non-existing input");
         }
 
         // put(), containsKey(), return(), and get() should all throw NullPointerExceptions with null inputs.
         try {
             map.put(null, "Zero");
-            assertTrue(false);
+            fail("put() threw no exception for a null input");
         } catch (NullPointerException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("put() threw wrong exception for a null input");
         }
         try {
             map.containsKey(null);
-            assertTrue(false);
+            fail("containsKey() threw no exception for a null input");
         } catch (NullPointerException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("containsKey() threw wrong exception for a null input");
         }
         try {
             map.get(null);
-            assertTrue(false);
+            fail("get() threw no exception for a null input");
         } catch (NullPointerException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("get() threw wrong exception for a null input");
         }
         try {
             map.remove(null);
-            assertTrue(false);
+            fail("remove() threw no exception for a null input");
         } catch (NullPointerException e) {
 
         } catch (Exception e) {
-            assertTrue(false);
+            fail("remove() threw wrong exception for a null input");
         }
     }
 
