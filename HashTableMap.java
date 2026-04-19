@@ -318,31 +318,34 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         }
     }
 
+    @Test
+    public void testRehashing() {
+        HashTableMap<Integer, String> map = new HashTableMap<>(3);
+        map.put(12, "Bush"); //should be at index 0
+        map.put(2, "Bryant"); //should be at index 2
+        assertEquals(map.getKeys().get(0), 12);
+        assertEquals(map.getKeys().get(1), 2);
+        map.put(1, "Johnson"); //This should trigger a resize operation
+        assertEquals(map.getLF(), 0.5);
+        map.put(6, "Gordon");
+        // Now the order should be Bush, Gordon, Johnson, Bryant
+        assertEquals(map.getKeys().get(0), 12);
+        assertEquals(map.getKeys().get(1), 6);
+        assertEquals(map.getKeys().get(2), 1);
+        assertEquals(map.getKeys().get(3), 2);
+        map.put(98, "Sweat");
+        map.put(53, "Edwards");
+    }
+
     public static void main(String args[]) {
-        HashTableMap<Integer, String> map = new HashTableMap<>();
-        map.put(15,"Odunze");
-        map.put(10, "Burden III");
-        map.put(18, "Williams");
-        map.put(84, "Loveland");
-        map.put(85, "Kmet");
-        map.put(4, "Swift");
-        map.put(25, "Monongai");
-        try {
-            map.get(70);
-            System.out.println("70TNE");
-        } catch (NoSuchElementException e) {
-
-        } catch (Exception e) {
-            System.out.println("70TWE");
-        }
-        try {
-            map.remove(62);
-            System.out.println("62TNE");
-            assertTrue(false);
-        } catch (NoSuchElementException e) {
-
-        } catch (Exception e) {
-            System.out.println("62TWE");
-        }
+        HashTableMap<Integer, String> map = new HashTableMap<>(3);
+        map.put(12, "Bush"); //should be at index 0
+        map.put(2, "Bryant"); //should be at index 2
+        map.put(1, "Johnson"); //This should trigger a resize operation
+        map.put(6, "Gordon");
+        System.out.println(map.getKeys());
+        map.put(98, "Sweat");
+        map.put(53, "Edwards");
+        System.out.println(map.getKeys());
     }
 }
