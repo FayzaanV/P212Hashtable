@@ -335,6 +335,14 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         assertEquals(map.getKeys().get(3), 2);
         map.put(98, "Sweat");
         map.put(53, "Edwards");
+        assertEquals(map.getLF(), 0.5);
+        // Now the order should be Bush, Johnson, Bryant, Sweat, Edwards, Gordon
+        assertEquals(map.getKeys().get(0), 12);
+        assertEquals(map.getKeys().get(1), 1);
+        assertEquals(map.getKeys().get(2), 2);
+        assertEquals(map.getKeys().get(3), 98);
+        assertEquals(map.getKeys().get(4), 53);
+        assertEquals(map.getKeys().get(5), 6);
     }
 
     public static void main(String args[]) {
