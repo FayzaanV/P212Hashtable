@@ -44,6 +44,15 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         }
     }
 
+    /**
+     * This helper method calculates what array index each key should be stored at by taking the absolute value of the key's hashCode and doing the modulus
+     * operator with the capacity of the array.
+     */
+    private int hash(KeyType key) {
+        int hc = key.hashCode();
+        return (hc % table.length);
+    }
+
     @Override
     public void put(KeyType key, ValueType value) throws IllegalArgumentException {
         if (key == null) {
@@ -66,29 +75,49 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         }
         int i = hash(key);
         LinkedList<Pair> target = table[i];
-        if (target.contains(key)) {
-            return true;
+        for(Pair p : target) {
+            if (p.key.equals(key)) {
+                return true;
+            }
         }
         return false;
     }
 
     @Override
     public ValueType get(KeyType key) throws NoSuchElementException {
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        if (!containsKey(key)) {
+            throw new NoSuchElementException("Key not found in the HashTableMap");
+        }
+        int i = hash(key);
+        LinkedList<Pair> target = table[i];
+        for(Pair p : target) {
+            if (p.key.equals(key)) {
+                return p.value;
+            }
+        }
         return null;
-    }
-
-    /**
-     * This helper method calculates what array index each key should be stored at by taking the absolute value of the key's hashCode and doing the modulus
-     * operator with the capacity of the array.
-     */
-    private int hash(KeyType key) {
-        int hc = key.hashCode();
-        return (hc % table.length);
     }
 
     @Override
     public ValueType remove(KeyType key) throws NoSuchElementException {
-        // Update lf here
+        if (key == null) {
+            throw new NullPointerException("Key cannot be null");
+        }
+        if (!containsKey(key)) {
+            throw new NoSuchElementException("Key not found in the HashTableMap");
+        }
+        int i = hash(key);
+        LinkedList<Pair> target = table[i];
+        for(Pair p : target) {
+            if (p.key.equals(key)) {
+                target.remove(p);
+                updateLF();
+                return p.value;
+            }
+        }
         return null;
     } 
 
