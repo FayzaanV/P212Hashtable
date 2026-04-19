@@ -63,9 +63,11 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         int i = hash(key);
         LinkedList<Pair> target = table[i];
         target.add(tuple);
-        //Update lf here
+        //Update lf and resize
         updateLF();
-        // resize
+        if (lf >= THRESHOLD) {
+            resize();
+        }
     }
 
     @Override
@@ -122,7 +124,12 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
     } 
 
     @Override
-    public void clear() {}
+    @SuppressWarnings("unchecked")
+    public void clear() {
+        int capacity = getCapacity();
+        // By creating a new list, we erase all reference to the old list and every pair it stored. They will be picked up by the garbage collector.
+        table = (LinkedList<Pair>[]) new LinkedList[capacity];
+    }
 
     /**
      * For each LinkedList in table, add the length of it to a cumulative total. After iterating through all of the array, return the total. This will
@@ -168,16 +175,30 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         return lf;
     }
 
+    @Override
+    public LinkedList<KeyType> getKeys() {
+        LinkedList<KeyType> allKeys = new LinkedList<>();
+        for(LinkedList<Pair> l : table) {
+            for(Pair p : l) {
+                allKeys.add(p.key);
+            }
+        }
+        return allKeys;
+    }
+
     /**
      * Helper method to resize the array if the load factor gets too high
      */
+    @SuppressWarnings("unchecked")
     public void resize() {
-
-    }
-
-    @Override
-    public LinkedList<KeyType> getKeys() {
-        return null;
+        LinkedList<Pair> allPairs = new LinkedList<>();
+        for(LinkedList<Pair> l : table) {
+            allPairs.addAll(l);
+        }
+        table = (LinkedList<Pair>[]) new LinkedList[getCapacity() * 2];
+        for (Pair p : allPairs) {
+            put(p.key, p.value);
+        }
     }
 
     public static void main(String[] args) {
