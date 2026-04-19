@@ -449,10 +449,11 @@ public class HashTableMap<KeyType, ValueType> implements MapADT<KeyType, ValueTy
         map.put(12, "Schwarber");
         assertEquals(map.getSize(), 5);
         assertEquals(map.getCapacity(), 8);
-        map.put(18, "Zobrist");
+        map.put(18, "Zobrist"); // Resize operation triggered here
         map.put(24, "Fowler");
         assertEquals(map.getSize(), 7);
         assertEquals(map.getCapacity(), 16);
+        // clear() should set keys to 0 and getKeys() should be empty, but capacity should be unchanged
         map.clear();
         assertEquals(map.getSize(), 0);
         assertEquals(map.getCapacity(), 16);
